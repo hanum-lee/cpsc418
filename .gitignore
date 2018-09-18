@@ -1,2 +1,3 @@
-*.synctex.gz
-*.pdf
+/*.synctex.gz
+/*.pdf
+/*.log
