@@ -1,2 +1,3 @@
-*/*.aux
+*/*.aux*
 */*.synctex*
+*/*.log*
