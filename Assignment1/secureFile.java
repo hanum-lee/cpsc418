@@ -47,7 +47,7 @@ public class secureFile{
 
             secRan = SecureRandom.getInstance("SHA1PRNG");
             secRan.setSeed(seedByte);
-            
+
             System.out.println("Seedbyte: " + seedByte);
             
             byte[] msg = new byte[in_file.available()];
@@ -86,9 +86,6 @@ public class secureFile{
 			}
 			if(out_file != null){
 				out_file.close();
-			}
-			if(in_file2 != null){
-				in_file2.close();
 			}
         }
 
@@ -156,6 +153,52 @@ public class secureFile{
         buf.append(hexChars[high]);
         buf.append(hexChars[low]);
     }
+
+    public static byte[] generateDSASig(byte[] hash){
+		byte[] ret = null;
+
+		try{
+			keypairgen = KeyPairGenerator.getInstance("DSA");
+			secRan = SecureRandom.getInstance("SHA1PRNG");
+			keypairgen.initialize(1024, secRan);
+			keypair = keypairgen.generateKeyPair();
+
+			//get private and public keys
+			private_key = (DSAPrivateKey) keypair.getPrivate();
+			public_key = (DSAPublicKey) keypair.getPublic();
+
+			//make DSA object
+			dsa_sig = Signature.getInstance("SHA/DSA");
+			dsa_sig.initSign(private_key);
+			dsa_sig.update(hash);
+			ret = dsa_sig.sign();
+		}
+		catch(Exception e){
+			System.out.println(e);
+		}
+
+		return ret;		
+	}
+
+	public static boolean verifyDSASig(byte[] signature, byte[] hash){
+		boolean verified = false;
+
+		try{
+			//put signature in Verify mode
+			dsa_sig.initVerify(public_key);
+			
+			//load the data to verify
+			dsa_sig.update(hash);
+
+			//get verification boolean
+			verified = dsa_sig.verify(signature);
+		}
+		catch(Exception e){
+			System.out.println(e);
+		}
+		return verified;
+	}
+
 
     /*
     public static int stringToSeed(String input){
