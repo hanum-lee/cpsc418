@@ -45,7 +45,9 @@ public class secureFile{
             out_file = new FileOutputStream(args[1]);
             seedByte = args[2].getBytes();
 
-            secRan = new SecureRandom(seedByte);
+            secRan = SecureRandom.getInstance("SHA1PRNG");
+            secRan.setSeed(seedByte);
+            
             System.out.println("Seedbyte: " + seedByte);
             
             byte[] msg = new byte[in_file.available()];

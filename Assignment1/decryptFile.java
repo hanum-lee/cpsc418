@@ -44,7 +44,8 @@ public class decryptFile{
             out_file = new FileOutputStream(args[1]);
             seedByte = args[2].getBytes();
 
-            secRan = new SecureRandom(seedByte);
+            secRan = SecureRandom.getInstance("SHA1PRNG");
+            secRan.setSeed(seedByte);
             
             System.out.println("Seed: " + seedByte);
             byte[] msg = new byte[in_file.available()];
@@ -55,7 +56,7 @@ public class decryptFile{
 			//print out hash in hex
             System.out.println("SHA-1 Hash: " + toHexString(sha_hash));
             */
-            
+
             //encrypt file with AES
 			//key setup - generate 128 bit key
 			key_gen = KeyGenerator.getInstance("AES");
