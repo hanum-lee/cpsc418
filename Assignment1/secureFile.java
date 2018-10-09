@@ -73,11 +73,22 @@ public class secureFile{
 			//create the cipher object that uses AES as the algorithm
 			sec_cipher = Cipher.getInstance("AES");	
 
+			sig = generateDSASig(sha_hash);
+			big_sig = new BigInteger(sig);
+			System.out.println("sig in big int form: " + big_sig);
+			String signstrs = "SiGn" + big_sig.toString();
+			byte[] signStr = "SiGn".getBytes();
+			byte[] sign = signstrs.getBytes();
+			byte[] dest = new byte[msg.length + sign.length];
+			System.arraycopy(msg, 0, dest, 0, msg.length);
+			//System.arraycopy(signStr, 0, dest, msg.length, signStr.length);
+			System.arraycopy(sign, 0, dest, msg.length, sign.length);
+			
 			//do AES encryption
-            aes_ciphertext = aes_encrypt(msg);
+            aes_ciphertext = aes_encrypt(dest);
 			//System.out.println("encrypted file: " + toHexString(aes_ciphertext));
 
-
+			
 
 			out_file.write(aes_ciphertext);
 			out_file.close();
