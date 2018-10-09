@@ -124,6 +124,52 @@ public class decryptFile{
     }
     
 
+    public static byte[] generateDSASig(byte[] hash){
+		byte[] ret = null;
+
+		try{
+			keypairgen = KeyPairGenerator.getInstance("DSA");
+			secRan = SecureRandom.getInstance("SHA1PRNG");
+			keypairgen.initialize(1024, secRan);
+			keypair = keypairgen.generateKeyPair();
+
+			//get private and public keys
+			private_key = (DSAPrivateKey) keypair.getPrivate();
+			public_key = (DSAPublicKey) keypair.getPublic();
+
+			//make DSA object
+			dsa_sig = Signature.getInstance("SHA/DSA");
+			dsa_sig.initSign(private_key);
+			dsa_sig.update(hash);
+			ret = dsa_sig.sign();
+		}
+		catch(Exception e){
+			System.out.println(e);
+		}
+
+		return ret;		
+	}
+
+	public static boolean verifyDSASig(byte[] signature, byte[] hash){
+		boolean verified = false;
+
+		try{
+			//put signature in Verify mode
+			dsa_sig.initVerify(public_key);
+			
+			//load the data to verify
+			dsa_sig.update(hash);
+
+			//get verification boolean
+			verified = dsa_sig.verify(signature);
+		}
+		catch(Exception e){
+			System.out.println(e);
+		}
+		return verified;
+	}
+
+
     /*
      * Converts a byte array to hex string
      * this code from http://java.sun.com/j2se/1.4.2/docs/guide/security/jce/JCERefGuide.html#HmacEx
@@ -153,5 +199,8 @@ public class decryptFile{
         buf.append(hexChars[high]);
         buf.append(hexChars[low]);
     }
+
+
+
 
 }
