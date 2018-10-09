@@ -25,7 +25,8 @@ public class secureFile{
 	private static Signature dsa_sig = null;
 	private static SecureRandom secRan = null;
     private static BigInteger big_sig = null;
-    private static byte[] seedByte = null;
+	private static byte[] seedByte = null;
+	private static SecureRandom seedRan = null;
     
     
     public static void main(String[] args) throws Exception{
@@ -45,8 +46,8 @@ public class secureFile{
             out_file = new FileOutputStream(args[1]);
             seedByte = args[2].getBytes();
 
-            secRan = SecureRandom.getInstance("SHA1PRNG");
-            secRan.setSeed(seedByte);
+            seedRan = SecureRandom.getInstance("SHA1PRNG");
+            seedRan.setSeed(seedByte);
 
             System.out.println("Seedbyte: " + seedByte);
             
@@ -61,7 +62,7 @@ public class secureFile{
             //encrypt file with AES
 			//key setup - generate 128 bit key
 			key_gen = KeyGenerator.getInstance("AES");
-			key_gen.init(128,secRan);
+			key_gen.init(128,seedRan);
 			sec_key = key_gen.generateKey();
 
 			//get key material in raw form
@@ -75,6 +76,9 @@ public class secureFile{
 			//do AES encryption
             aes_ciphertext = aes_encrypt(msg);
 			//System.out.println("encrypted file: " + toHexString(aes_ciphertext));
+
+
+
 			out_file.write(aes_ciphertext);
 			out_file.close();
 
