@@ -25,9 +25,10 @@ public class secureFile{
 	private static Signature dsa_sig = null;
 	private static SecureRandom secRan = null;
     private static BigInteger big_sig = null;
+    private static byte[] seedByte = null;
     
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         FileInputStream in_file = null;
 		FileInputStream in_file2 = null;
 		FileOutputStream out_file = null;
@@ -42,6 +43,10 @@ public class secureFile{
         try{
             in_file = new FileInputStream(args[0]);
             out_file = new FileOutputStream(args[1]);
+            seedByte = args[2].getBytes();
+
+            secRan = new SecureRandom(seedByte);
+            System.out.println("Seedbyte: " + seedByte);
             
             byte[] msg = new byte[in_file.available()];
 			read_bytes = in_file.read(msg);
@@ -54,26 +59,35 @@ public class secureFile{
             //encrypt file with AES
 			//key setup - generate 128 bit key
 			key_gen = KeyGenerator.getInstance("AES");
-			key_gen.init(128);
+			key_gen.init(128,secRan);
 			sec_key = key_gen.generateKey();
 
 			//get key material in raw form
 			raw = sec_key.getEncoded();
 			sec_key_spec = new SecretKeySpec(raw, "AES");
 
+            //System.out.println("Key: " + sec_key_spec);
 			//create the cipher object that uses AES as the algorithm
 			sec_cipher = Cipher.getInstance("AES");	
 
 			//do AES encryption
-			aes_ciphertext = aes_encrypt(msg);
+            aes_ciphertext = aes_encrypt(msg);
 			//System.out.println("encrypted file: " + toHexString(aes_ciphertext));
 			out_file.write(aes_ciphertext);
 			out_file.close();
 
         }catch (Exception e){
-
+            System.out.println(e);
         }finally{
-
+			if (in_file != null){
+				in_file.close();
+			}
+			if(out_file != null){
+				out_file.close();
+			}
+			if(in_file2 != null){
+				in_file2.close();
+			}
         }
 
         System.out.println("secureFile worked");
@@ -141,4 +155,13 @@ public class secureFile{
         buf.append(hexChars[low]);
     }
 
+    /*
+    public static int stringToSeed(String input){
+        int seed = 0;
+        for(int i = 0; i < input.length();i++){
+            seed += (int)input.charAt(i);
+        }
+        return seed;
+    }
+    */
 }

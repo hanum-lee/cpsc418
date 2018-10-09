@@ -25,8 +25,9 @@ public class decryptFile{
 	private static Signature dsa_sig = null;
 	private static SecureRandom secRan = null;
     private static BigInteger big_sig = null;
+    private static byte[] seedByte = null;
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         FileInputStream in_file = null;
 		FileInputStream in_file2 = null;
 		FileOutputStream out_file = null;
@@ -41,9 +42,36 @@ public class decryptFile{
         try{
             in_file = new FileInputStream(args[0]);
             out_file = new FileOutputStream(args[1]);
+            seedByte = args[2].getBytes();
+
+            secRan = new SecureRandom(seedByte);
             
+            System.out.println("Seed: " + seedByte);
             byte[] msg = new byte[in_file.available()];
 			read_bytes = in_file.read(msg);
+
+            /*
+            sha_hash = sha1_hash(msg);
+			//print out hash in hex
+            System.out.println("SHA-1 Hash: " + toHexString(sha_hash));
+            */
+            
+            //encrypt file with AES
+			//key setup - generate 128 bit key
+			key_gen = KeyGenerator.getInstance("AES");
+			key_gen.init(128,secRan);
+			sec_key = key_gen.generateKey();
+
+			//get key material in raw form
+			raw = sec_key.getEncoded();
+			sec_key_spec = new SecretKeySpec(raw, "AES");
+
+			//create the cipher object that uses AES as the algorithm
+			sec_cipher = Cipher.getInstance("AES");	
+            
+			
+			decrypted_str = aes_decrypt(msg);
+			System.out.println("decrypted: " + decrypted_str);
 
         }catch (Exception e){
 
