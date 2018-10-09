@@ -121,7 +121,7 @@ public class demo{
 			sig = generateDSASig(sha_hash);
 			big_sig = new BigInteger(sig);
 			System.out.println("sig in big int form: " + big_sig);
-
+			System.out.println("sig in byte: " + sig);
 			//verify signature
 			verify = verifyDSASig(sig, sha_hash);
 			System.out.println("Signature verified? " + verify);

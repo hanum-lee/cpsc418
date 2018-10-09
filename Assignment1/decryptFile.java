@@ -7,6 +7,7 @@ import java.security.interfaces.*;
 import java.security.interfaces.DSAKey;
 import java.math.*;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 
 
@@ -73,7 +74,45 @@ public class decryptFile{
             
 			
 			decrypted_str = aes_decrypt(msg);
-			System.out.println("decrypted: " + decrypted_str);
+			byte[] decrptbyte = aes_decrypt_byte(msg);
+			byte[] decryp = decrypted_str.getBytes();
+			byte[] hashvalue = Arrays.copyOfRange(decrptbyte, decrptbyte.length-20, decrptbyte.length);
+			//System.out.println("hashvalue: " + toHexString(hashvalue));
+			byte[] msgvalue = Arrays.copyOfRange(decrptbyte, 0, decrptbyte.length-20);
+			//System.out.println("msgvalue: " + msgvalue.toString());
+
+			byte[] cipmsghash = sha1_hash(msgvalue);
+			if(Arrays.equals(cipmsghash, hashvalue)){
+				System.out.println("Same");
+			}else{
+				System.out.println("Not same");
+			}
+
+/*
+			String[] parts = decrypted_str.split("SiGn");
+			System.out.println("First Part:" + parts[0]);
+			System.out.println("Second Part:" + parts[1]);
+			//int signind = decrypted_str.indexOf("SiGn");
+			
+			byte[] decrypmsg = parts[0].getBytes();
+			byte[] sha_hash1 = sha1_hash(decrypmsg);
+			byte[] sign1 = generateDSASig(sha_hash1);
+			BigInteger big_sig1 = new BigInteger(sign1);
+			System.out.println("big_sig1: " + big_sig1);
+
+			BigInteger signiture = new BigInteger(parts[1]);
+			byte[] sign = signiture.toByteArray();
+			byte[] sign2 = parts[1].getBytes();
+
+			sha_hash = sha1_hash(decrypmsg);
+
+			verify = verifyDSASig(sign2, sha_hash);
+			System.out.println("Signature verified? " + verify);
+*/
+			System.out.println("decrypted: " + msgvalue.toString());
+
+			out_file.write(msgvalue);
+			out_file.close();
 
         }catch (Exception e){
 
@@ -122,6 +161,21 @@ public class decryptFile{
 			System.out.println(e);
 		}
 		return dec_str;
+	}
+	
+	public static byte[] aes_decrypt_byte(byte[] data_in) throws Exception{
+		byte[] decrypted = null;
+		try{
+			//set cipher to decrypt mode
+			sec_cipher.init(Cipher.DECRYPT_MODE, sec_key_spec);
+
+			//do decryption
+			decrypted = sec_cipher.doFinal(data_in);
+		}
+		catch(Exception e){
+			System.out.println(e);
+		}
+		return decrypted;
     }
     
 

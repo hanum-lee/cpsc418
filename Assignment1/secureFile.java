@@ -56,6 +56,7 @@ public class secureFile{
 
             sha_hash = sha1_hash(msg);
 
+			System.out.println("SHA Length: " + sha_hash.length);
 			//print out hash in hex
             System.out.println("SHA-1 Hash: " + toHexString(sha_hash));
             
@@ -72,18 +73,21 @@ public class secureFile{
             //System.out.println("Key: " + sec_key_spec);
 			//create the cipher object that uses AES as the algorithm
 			sec_cipher = Cipher.getInstance("AES");	
-
+/*
 			sig = generateDSASig(sha_hash);
 			big_sig = new BigInteger(sig);
 			System.out.println("sig in big int form: " + big_sig);
-			String signstrs = "SiGn" + big_sig.toString();
-			byte[] signStr = "SiGn".getBytes();
-			byte[] sign = signstrs.getBytes();
-			byte[] dest = new byte[msg.length + sign.length];
+			//String signstrs = "SiGn" + big_sig;
+			String signstrs = "SiGn" + big_sig;
+			//byte[] signStr = "SiGn".getBytes();*/
+			//byte[] sign = signstrs.getBytes();
+			byte[] dest = new byte[msg.length + sha_hash.length];
 			System.arraycopy(msg, 0, dest, 0, msg.length);
 			//System.arraycopy(signStr, 0, dest, msg.length, signStr.length);
-			System.arraycopy(sign, 0, dest, msg.length, sign.length);
+			System.arraycopy(sha_hash, 0, dest, msg.length, sha_hash.length);
 			
+
+
 			//do AES encryption
             aes_ciphertext = aes_encrypt(dest);
 			//System.out.println("encrypted file: " + toHexString(aes_ciphertext));
