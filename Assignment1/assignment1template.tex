@@ -37,13 +37,13 @@
 				\[= M + K_{2}\pmod{26} + K_{1}\pmod{26}\]
 				\[= M + K_{3}\pmod{26}\]
 				for $K_{1,2,3} \in Keyspace$
-			\item Assume: $E_{k}(m) \equiv m + k\pmod{26}$ For all $m \in M \& k \in K$\\
+			\item Assume: $E_{k}(m) \equiv m + k\pmod{26}$ For all $m \in \mathcal{M} \& k \in \mathcal{K}$\\
 			Base case: $E_{K_{1}}(E_{K_{2}}(M)) \equiv  M + K_{3}\pmod{26}$ (Proven at 1.(a).i)\\
 			Inductive Hypothesis: $E_{k_{n}}(E_{k_{n-1}}...E_{k_{1}}(m)) \equiv m + (k_{n+n-1+...+1} ) \pmod{26}$ is true for $n > 2 $\\
 			Inductive Step:\\
 			Want to show that: $E_{k_{n+1}}(E_{k_{n}}...E_{k_{1}}(m)) \equiv m + k_{(n+1)+n+..+1} \pmod{26}$\\
 			$E_{k_{n+1}}(E_{k_{n}}...E_{k_{1}}(m)) = E_{k_{k+1}}(m+k_{n+...+1}\pmod{26})$ (with Inductive Hypothesis)
-			\[\equiv m + k_{(n+1) + n + .. +1} \pmod{26} \] where $k_{(n+1) + n+...+1} = k_q$ for $q \in Z $\\
+			\[\equiv m + k_{(n+1) + n + .. +1} \pmod{26} \] where $k_{(n+1) + n+...+1} = k_q$ for $q \in \mathbb{Z} $\\
 			Therefore, the induction holds true.
 		\end{enumerate}
 		\item
@@ -115,56 +115,43 @@
 	\item[] \textbf{Problem 4} --- Conditional entropy, 12 marks
 		
 		\begin{enumerate}
-			\item
+			\item To find $H(M|C)$, I have to compute:\\
+			$\sum_{i=1}^{4}p(C_{i}) \sum_{j=1}^{4} p(C_{i}|M_{j})\log_{2}(\dfrac{1}{p(C_{i}|M_{j})})$\\
+			For $p(C_{1})$, $\sum_{j=1}^{4} p(C_{1}|M_{j})\log_{2}(\dfrac{1}{p(C_{1}|M_{j})}) = \dfrac{1}{2} \log_{2} 2 + \dfrac{1}{2} \log_{2} 2 + 0 + 0 = 1$ Assuming that $M_{1}$ and $M_{2}$ has equal chance of appearing when cipher text is $C_{1}$\\
+			Repeat this for $p(C_{2}),p(C_{3}),p(C_{4})$\\
+			For $p(C_{2})$, $\sum_{j=2}^{4} p(C_{2}|M_{j})\log_{2}(\dfrac{1}{p(C_{2}|M_{j})}) = 0 + 0  + \dfrac{1}{2} \log_{2} 2 + \dfrac{1}{2} \log_{2} 2 = 1$\\
+			This goes same for  $p(C_{3}),p(C_{4})$,\\
+			So, $\sum_{i=1}^{4}p(C_{i}) \sum_{j=1}^{4} p(C_{i}|M_{j})\log_{2}(\dfrac{1}{p(C_{i}|M_{j})}) = 4$
+			\item If cryptosystem is providing perfect secrecy implies that knowing the ciphertext $\mathcal{C}$ gives no information about $\mathcal{M}$.Which could also means that knowing message does not give information about ciphertext. This can be represented as
+			$H(\mathcal{C}|\mathcal{M}) = H(\mathcal{C})$.\\
+			Then, $H(C|M) = \dfrac{p(C)p(M|C)}{p(M)}$\\
+			For $H(\mathcal{C}|\mathcal{M}) = H(\mathcal{C})$ to hold true,  $H(\mathcal{M}|\mathcal{C}) = H(\mathcal{M})$ has to hold true.\\
+			Therefore, for cryptosystem to have perfect secrecy, $H(\mathcal{M}|\mathcal{C}) = H(\mathcal{M})$ has to hold true.
 			
-			\item
-			\item
+			%With the method used above, we can find $H(C|M)$ and $H(C)$\\
+			%\[H(C|M) = \sum_{i=1}^{4}p(M_{i}) \sum_{j=1}^{4} p(M_{i}|C_{j})\log_{2}(\dfrac{1}{p(M_{i}|C_{j})})\]
+%			Since all of the $M \in \mathcal{M}$ has equal possibility, I just have to compute one of them.\\
+%			For $p(M_{1})$, $\sum_{j=1}^{4} p(M_{1}|C_{j})\log_{2}(\dfrac{1}{p(M_{1}|C_{j})}) = \dfrac{1}{2} \log_{2} 2 + 0 + 0 + \dfrac{1}{2} \log_{2} 2 = 1$\\
+%			So, $H(C|M) = 4 $ and $H(C) = 4$
+			
+			\item No, 
+			With the methods used above, we can find $H(C|M)$ and $H(C)$\\
+			\[H(C|M) = \sum_{i=1}^{4}p(M_{i}) \sum_{j=1}^{4} p(M_{i}|C_{j})\log_{2}(\dfrac{1}{p(M_{i}|C_{j})})\]
+			Since all of the $M \in \mathcal{M}$ has equal possibility, I just have to compute one of them.\\
+			For $p(M_{1})$, $\sum_{j=1}^{4} p(M_{1}|C_{j})\log_{2}(\dfrac{1}{p(M_{1}|C_{j})}) = \dfrac{1}{2} \log_{2} 2 + 0 + 0 + \dfrac{1}{2} \log_{2} 2 = 1$\\
+			So, $H(C|M) = 4 $ and $H(C) = 8$\\
+			Since, $H(\mathcal{C}|\mathcal{M}) \ne H(\mathcal{C})$, example does not provide perfect secrecy.
+			
 		\end{enumerate}
 	\end{enumerate}
 	
 	
 	\begin{enumerate}
-	\item[] \textbf{Problem 5} --- Perfect secrecy and joint entropy, 43 marks
 	
-	\textbf{*** Remove the text for this problem if you don't attempt it. ***}
-	
-	\begin{enumerate}
-	
-	\item
-	\begin{enumerate}
-	
-	\item
-	
-	\item
-	
-	\item
-	
-	\item
-	
-	\item
-	\end{enumerate}
-	
-	\item
-	\begin{enumerate}
-	\item
-	
-	\item
-	
-	\item
-	
-	\item
-	
-	\item
-	
-	\item
-	
-	\item
-	\end{enumerate}
-	\end{enumerate}
-	
-	\item[] \textbf{Problem 7} --- Mixed Vigen\`ere cipher cryptanalysis, 10 marks
-	
-	\textbf{*** Remove the text for this problem if you don't attempt it. ***}
+		
+		\item[] \textbf{Problem 7} --- Mixed Vigen\`ere cipher cryptanalysis, 10 marks
+		
+		\textbf{*** Remove the text for this problem if you don't attempt it. ***}
 	
 	
 	\end{enumerate}
