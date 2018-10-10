@@ -30,13 +30,24 @@
 	
 	\begin{enumerate}
 		\item
-	\begin{enumerate}
-		\item \emph{Replace this text by your solution to part (a) i of Problem 1..}
-	
-		\item \emph{Replace this text by your solution to part (a) ii of Problem 1 etc.}
-	\end{enumerate}
-	
+		\begin{enumerate}
+			\item Single Cipher: $E_{k}(M) \equiv M + K \pmod{26}$\\
+				Double Cipher:\\
+				\[E_{K_{1}}(E_{K_{2}}(M)) \equiv E_{K_{1}}(M+K_{2}\pmod{26})\]
+				\[= M + K_{2}\pmod{26} + K_{1}\pmod{26}\]
+				\[= M + K_{3}\pmod{26}\]
+				for $K_{1,2,3} \in Keyspace$
+			\item Assume: $E_{k}(m) \equiv m + k\pmod{26}$ For all $m \in M \& k \in K$\\
+			Base case: $E_{K_{1}}(E_{K_{2}}(M)) \equiv  M + K_{3}\pmod{26}$ (Proven at 1.(a).i)\\
+			Inductive Hypothesis: $E_{k_{n}}(E_{k_{n-1}}...E_{k_{1}}(m)) \equiv m + (k_{n+n-1+...+1} ) \pmod{26}$ is true for $n > 2 $\\
+			Inductive Step:\\
+			Want to show that: $E_{k_{n+1}}(E_{k_{n}}...E_{k_{1}}(m)) \equiv m + k_{(n+1)+n+..+1} \pmod{26}$\\
+			$E_{k_{n+1}}(E_{k_{n}}...E_{k_{1}}(m)) = E_{k_{k+1}}(m+k_{n+...+1}\pmod{26})$ (with Inductive Hypothesis)
+			\[\equiv m + k_{(n+1) + n + .. +1} \pmod{26} \] where $k_{(n+1) + n+...+1} = k_q$ for $q \in Z $\\
+			Therefore, the induction holds true.
+		\end{enumerate}
 		\item
+		
 	\end{enumerate}
 	
 	
@@ -45,23 +56,37 @@
 	
 	
 	\begin{enumerate}
-		\item
-		\item
-		
-	\begin{enumerate}
-		\item
-		\item
-	\end{enumerate}
-		
+		\item $2^{7}*2^{7}*2^{7}*2^{7}*2^{7}*2^{7}*2^{7}2^{7} = 2^{7*8} = 2^{56}$
 		\item
 		
-		\item
+		\begin{enumerate}
+			\item $98*98*98*98*98*98*98*98 = 98^{8}$
+			\item$\dfrac{98^8}{2^{56}} * 100 = 11.81\%$
+		\end{enumerate}
 		
+		\item $H(X) = {\sum}_{i=0}^{n} p(X_{i}) \log_{2} \dfrac{1}{p(X_{i})}$\\
+		In this case:\\
+		$H(X) = 8 * {\sum}_{i=1}^{n} \dfrac{1}{n} \log_{2} n$ (Since all characters have equal chance of appearing for each character and there are 8 characters in passwords )\\
+		$= 8 * \log_{2} 94$\\
+		$ = 52.43$
+		
+		\item Similar as above\\
+		$H(X) = 8 * {\sum}_{i=1}^{n} \dfrac{1}{n} \log_{2} n$\\
+		$= 8 * \log_{2} 26$\\
+		$= 37.60$
+
 		\item
 		\begin{enumerate}
-			\item
+			\item $128 = l * \log_{2} 94 $ where $l$ is length of the password\\ 
+			$l = \dfrac{128}{\log_{2} 94}$\\
+			$l = 19.35$\\
+			So, at least 20 characters
 			
-			\item
+			\item $128 = l * \log_{2} 26 $ where $l$ is length of the password\\
+			$l = \dfrac{128}{\log_{2} 26}$\\
+			$l = 27.23$\\
+			So, at least 28 characters
+			
 		\end{enumerate}
 	\end{enumerate}
 	
@@ -71,10 +96,19 @@
 	
 	
 	\begin{enumerate}
-		\item
-		\item
+		\item 
+		$H(X) = p(X_{1}) \log_{2}(\dfrac{1}{p(X_{1})}) + p(X_{2})\log_{2}(\dfrac{1}{p(X_{2})})$\\
+		$= \dfrac{1}{4} \log_{2} 4 + \dfrac{3}{4} \log_{2} \dfrac{4}{3}$\\
+		$= \dfrac{1}{2} + 0.311$\\
+		$= 0.81$
+		\item To find maximum of a function, first, we need to find derivative of the function.\\
+		$\dfrac{d}{dy} -p \log_{2}(p)-(1-p)log_{2}(1-p)$\\
+		$ =- \dfrac{d}{dy} (p) \dfrac{\ln p}{\ln 2} - (1-p)\dfrac{\ln (1-p)}{\ln 2} $
+		$ = $
 		
-		\item
+		
+		
+		\item  Find where the value of the derivative above is 0. Then find which point goes from negative to positive. 
 	
 	\end{enumerate}
 	
