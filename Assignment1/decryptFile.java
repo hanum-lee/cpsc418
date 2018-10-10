@@ -1,3 +1,9 @@
+/***********************
+
+
+
+***********************/
+
 
 import java.io.*;
 import java.security.*;
@@ -46,18 +52,14 @@ public class decryptFile{
             out_file = new FileOutputStream(args[1]);
             seedByte = args[2].getBytes();
 
+			//Generating random number from the seed given by user
             seedRan = SecureRandom.getInstance("SHA1PRNG");
             seedRan.setSeed(seedByte);
             
-            System.out.println("Seed: " + seedByte);
             byte[] msg = new byte[in_file.available()];
 			read_bytes = in_file.read(msg);
 
-            /*
-            sha_hash = sha1_hash(msg);
-			//print out hash in hex
-            System.out.println("SHA-1 Hash: " + toHexString(sha_hash));
-            */
+
 
             //encrypt file with AES
 			//key setup - generate 128 bit key
@@ -72,50 +74,31 @@ public class decryptFile{
 			//create the cipher object that uses AES as the algorithm
 			sec_cipher = Cipher.getInstance("AES");	
             
-			
+			//parse the hash value and message
 			decrypted_str = aes_decrypt(msg);
 			byte[] decrptbyte = aes_decrypt_byte(msg);
 			byte[] decryp = decrypted_str.getBytes();
 			byte[] hashvalue = Arrays.copyOfRange(decrptbyte, decrptbyte.length-20, decrptbyte.length);
-			//System.out.println("hashvalue: " + toHexString(hashvalue));
 			byte[] msgvalue = Arrays.copyOfRange(decrptbyte, 0, decrptbyte.length-20);
-			//System.out.println("msgvalue: " + msgvalue.toString());
 
 			byte[] cipmsghash = sha1_hash(msgvalue);
+			//If the hash value that was parsed from the cipher message and the hash value computed from the recieved message is equal, write the message to the file.
 			if(Arrays.equals(cipmsghash, hashvalue)){
 				System.out.println("Same");
+				out_file.write(msgvalue);
+				out_file.close();
 			}else{
 				System.out.println("Not same");
+				
 			}
 
-/*
-			String[] parts = decrypted_str.split("SiGn");
-			System.out.println("First Part:" + parts[0]);
-			System.out.println("Second Part:" + parts[1]);
-			//int signind = decrypted_str.indexOf("SiGn");
-			
-			byte[] decrypmsg = parts[0].getBytes();
-			byte[] sha_hash1 = sha1_hash(decrypmsg);
-			byte[] sign1 = generateDSASig(sha_hash1);
-			BigInteger big_sig1 = new BigInteger(sign1);
-			System.out.println("big_sig1: " + big_sig1);
 
-			BigInteger signiture = new BigInteger(parts[1]);
-			byte[] sign = signiture.toByteArray();
-			byte[] sign2 = parts[1].getBytes();
 
-			sha_hash = sha1_hash(decrypmsg);
 
-			verify = verifyDSASig(sign2, sha_hash);
-			System.out.println("Signature verified? " + verify);
-*/
-			System.out.println("decrypted: " + msgvalue.toString());
 
-			out_file.write(msgvalue);
-			out_file.close();
 
         }catch (Exception e){
-
+			System.out.println(e);
         }finally{
             if (in_file != null){
 				in_file.close();
@@ -126,7 +109,7 @@ public class decryptFile{
         }
 
 
-        System.out.println("decrypt worked");
+
     }
 
     public static byte[] sha1_hash(byte[] input_data) throws Exception{
@@ -163,6 +146,7 @@ public class decryptFile{
 		return dec_str;
 	}
 	
+	//Does same thing as aes_decrypt_byte but instead it returns byte array
 	public static byte[] aes_decrypt_byte(byte[] data_in) throws Exception{
 		byte[] decrypted = null;
 		try{
