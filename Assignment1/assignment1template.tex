@@ -103,14 +103,18 @@
 		$= \dfrac{1}{2} + 0.311$\\
 		$= 0.81$
 		\item To find maximum of a function, first, we need to find derivative of the function.\\
-		$\dfrac{d}{dy} -p \log_{2}(p)-(1-p)log_{2}(1-p)$\\
-		$ =- \dfrac{d}{dy} (p) \dfrac{\ln p}{\ln 2} - (1-p)\dfrac{\ln (1-p)}{\ln 2} $
-		$ = $
+		$\dfrac{d}{dp} -p \log_{2}(p)-(1-p)log_{2}(1-p)$\\
+		$ = \dfrac{d}{dp}(- p \dfrac{\log p}{\log 2} - (1-p)\dfrac{\log (1-p)}{\log 2} )$ (Using product law and identity)\\
+		$ = -(\dfrac{p}{p}+\dfrac{\log p}{\log 2}) - (\dfrac{(1-p)}{(1-p)} + \dfrac{\log (1-p)}{\log 2}) $\\
+		$ = -1 - \dfrac{\log p}{\log 2} + 1 + \dfrac{\log (1-p)}{\log 2}$\\
+		$ = \dfrac{\log(1-p)-\log(p)}{\log 2}$\\
+		Then we find the $p$ value when the equation above is equal to $0$ which is $p=\dfrac{1}{2}$, therefore, it shows that entropy is maximal when both outcomes are equally likely.
 		
 		
 		
-		\item  Find where the value of the derivative above is 0. Then find which point goes from negative to positive. 
-	
+		\item  Since we know the value $p$, we just substitute it to the equation given.\\
+		$H(X) = \dfrac{1}{2} \log_{2}(2) + (\dfrac{1}{2}) \log_{2}(2) = 1$\\
+		So maximal value of $H(X)$ is $1$.	
 	\end{enumerate}
 	
 	\newpage
@@ -148,14 +152,6 @@
 	\end{enumerate}
 	
 	
-	\begin{enumerate}
-	
-		\newpage
-		\item[] \textbf{Problem 7} --- Mixed Vigen\`ere cipher cryptanalysis, 10 marks
-		
-		\textbf{*** Remove the text for this problem if you don't attempt it. ***}
-	
-	
-	\end{enumerate}
+
 
 \end{document}
