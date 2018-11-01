@@ -20,9 +20,9 @@ public class ServerThread extends Thread
      */
     public ServerThread (Socket s, Server p, int id)
     {
-	parent = p;
-	sock = s;
-	idnum = id;
+		parent = p;
+		sock = s;
+		idnum = id;
     }
 	
     /**
@@ -31,7 +31,7 @@ public class ServerThread extends Thread
      */
     public int getID ()
     {
-	return idnum;
+		return idnum;
     }
 	
     /**
@@ -53,85 +53,84 @@ public class ServerThread extends Thread
      */
     public void run ()
     {
-	BufferedReader in = null;
-	String incoming = null;
-		
-	try {
-	    in = new BufferedReader (new InputStreamReader (sock.getInputStream()));
-	}
-	catch (UnknownHostException e) {
-	    System.out.println ("Unknown host error.");
-	    return;
-	}
-	catch (IOException e) {
-	    System.out.println ("Could not establish communication.");
-	    return;
-	}
-		
-	/* Try to read from the socket */
-	try {
-	    incoming = in.readLine ();
-	}
-	catch (IOException e) {
-	    if (parent.getFlag())
-		{
-		    System.out.println ("shutting down.");
-		    return;
-		}
-	    return;
-	}
-		
-	/* See if we've recieved something */
-	while (incoming != null)
-	    {
-		/* If the client has sent "exit", instruct the server to
-		 * remove this thread from the vector of active connections.
-		 * Then close the socket and exit.
-		 */
-		if (incoming.compareTo("exit") == 0)
-		    {
-			parent.kill (this);
-			try {
-			    in.close ();
-			    sock.close ();
-			}
-			catch (IOException e)
-			    {/*nothing to do*/}
-			return;
-		    }
+		BufferedReader in = null;
+		String incoming = null;
 			
-		/* If the client has sent "die", instruct the server to
-		 * signal all threads to shutdown, then exit.
-		 */
-		else if (incoming.compareTo("die") == 0)
-		    {
-			parent.killall ();
-			return;
-		    }	
-			
-		/* Otherwise, just echo what was recieved. */
-		System.out.println ("Client " + idnum + ": " + incoming);
-			
-		/* Try to get the next line.  If an IOException occurs it is
-		 * probably because another client told the server to shutdown,
-		 * the server has closed this thread's socket and is signalling
-		 * for the thread to shutdown using the shutdown flag.
-		 */
 		try {
-		    incoming = in.readLine ();
+			in = new BufferedReader (new InputStreamReader (sock.getInputStream()));
+		}
+		catch (UnknownHostException e) {
+			System.out.println ("Unknown host error.");
+			return;
 		}
 		catch (IOException e) {
-		    if (parent.getFlag())
-			{
-			    System.out.println ("shutting down.");
-			    return;
-			}
-		    else
-			{
-			    System.out.println ("IO Error.");
-			    return;
-			}
+			System.out.println ("Could not establish communication.");
+			return;
 		}
+			
+		/* Try to read from the socket */
+		try {
+			incoming = in.readLine ();
+		}
+		catch (IOException e) {
+			if (parent.getFlag())
+			{
+				System.out.println ("shutting down.");
+				return;
+			}
+			return;
+		}
+			
+		/* See if we've recieved something */
+		while (incoming != null)
+			{
+			/* If the client has sent "exit", instruct the server to
+			* remove this thread from the vector of active connections.
+			* Then close the socket and exit.
+			*/
+				if (incoming.compareTo("exit") == 0){
+						parent.kill (this);
+						try {
+							in.close ();
+							sock.close ();
+						}
+						catch (IOException e)
+							{/*nothing to do*/}
+						return;
+				}
+				
+			/* If the client has sent "die", instruct the server to
+			* signal all threads to shutdown, then exit.
+			*/
+				else if (incoming.compareTo("die") == 0)
+					{
+					parent.killall ();
+					return;
+					}	
+				
+			/* Otherwise, just echo what was recieved. */
+				System.out.println ("Client " + idnum + ": " + incoming);
+				
+			/* Try to get the next line.  If an IOException occurs it is
+			* probably because another client told the server to shutdown,
+			* the server has closed this thread's socket and is signalling
+			* for the thread to shutdown using the shutdown flag.
+			*/
+				try {
+					incoming = in.readLine ();
+				}
+				catch (IOException e) {
+					if (parent.getFlag())
+					{
+						System.out.println ("shutting down.");
+						return;
+					}
+					else
+					{
+						System.out.println ("IO Error.");
+						return;
+					}
+			}
 	    }
     }
 }
