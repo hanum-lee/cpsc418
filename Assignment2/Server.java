@@ -13,7 +13,8 @@ public class Server
     private ServerSocket serversock;
     private Vector <ServerThread> serverthreads;  //holds the active threads
     private boolean shutdown;  //allows clients to shutdown the server
-    private int clientcounter;  //id numbers for the clients
+	private int clientcounter;  //id numbers for the clients
+	private Decrypt decrypt;
 
     /**
      * Main method

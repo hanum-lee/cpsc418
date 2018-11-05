@@ -8,7 +8,7 @@ import java.net.*;
 public class Client 
 {
     private Socket sock;  //Socket to communicate with.
-	
+	private Secure secure;
     /**
      * Main method, starts the client.
      * @param args args[0] needs to be a hostname, args[1] a port number.
