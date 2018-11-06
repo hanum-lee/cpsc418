@@ -17,7 +17,7 @@ public class Decrypt{
 	private static Cipher sec_cipher = null;
 	private static SecureRandom seedRan = null;
 
-    public Decrypt(){
+    public Decrypt(Stirng[] args)throws Exception{
 
     }
 

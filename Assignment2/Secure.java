@@ -22,7 +22,30 @@ public class Secure{
 
 
     public Secure(String[] args) throws Exception{
-        
+        FileInputStream in_file = null;
+        byte[] sha_hash = null;
+		byte[] hmac_hash = null;
+		byte[] aes_ciphertext = null;
+		byte[] sig = null;
+		String decrypted_str = new String();
+		int read_bytes = 0;
+        boolean verify = false;
+        try{
+            in_file = new FileInputStream(args[0]);
+            seedByte = args[2].getBytes();
+
+        }catch (Exception e){
+
+        }finally{
+            if (in_file != null){
+				in_file.close();
+			}
+        }
+
+
+    }
+
+    public byte[] encryptFile(String[] args) throws Exception {
 
     }
 
