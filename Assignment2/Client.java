@@ -55,7 +55,8 @@ public class Client
     {
 		/* Allows us to get input from the keyboard. */
 		BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-		
+		OutputStream fromcli;
+		DataOutputStream fromcliout;
 		String userinput;
 		PrintWriter out;
 		
