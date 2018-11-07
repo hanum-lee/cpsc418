@@ -95,32 +95,56 @@ ASSIGNMENT 2}
 		\end{enumerate}
 	\end{enumerate}
 	
-	
+	\newpage
 	\item[] \textbf{Problem 2} ---  Arithmetic with the constant polynomial of {\sc MixColumns} in
 	    AES, 13 marks
 	
 	\begin{enumerate}
 	
 		\item %a
-		
+			\[c(y)=(03)y^3 + (01)y^2 + (01)y + 02\]
+			Converting hex into bit,
+			\[(00000011)y^3+(00000001)y^2+(00000001)y+(00000010)\]
+			Then convert each byte into corresponding polynomials,
+			\[(x+1)y^3+(1)y^2+(1)y+(x)\]
 		\item %b
 		
 		\begin{enumerate}
 			\item %i
-			
+				We can express $b$ as polynomial:$b_7x^7+b_6x^6+b_5x^5+b_4x^4+b_3x^3+b_2x^2+b_1x+b_0$. Also we can express $x^8 = x^4+x^3=x+1$ and $(02)$ as $x$
+				\[b(02) = (b_7x^7+b_6x^6+b_5x^5+b_4x^4+b_3x^3+b_2x^2+b_1x+b_0)(x)\]
+				\[=b_7x^8+b_6x^7+b_5x^6+b_4x^5+b_3x^4+b_2x^3+b_1x^2+b_1x\]
+				\[=b_7(x^4+x^3+x+1) + b_6x^7+b_5x^6+b_4x^5+b_3x^4+b_2x^3+b_1x^2+b_1x\]
+				\[ = b_7x^4 +b_7x^3+b_7x+ b_7+ b_6x^7+b_5x^6+b_4x^5+b_3x^4+b_2x^3+b_1x^2+b_1x\]
+				\[= b_6x^7+b_5x^6+b_4x^5+(b_3+b_7)x^4+(b_2+b_7)x^3+b_1x^2+(b_1+b_7)x + b_7\]
 			\item %ii
+				We can express $(03)$ as $x+1$. We can express $b(03)$ as $b(02) + b$.
+				\[b(02) + b = \]
+				\[(b_6x^7+b_5x^6+b_4x^5+(b_3+b_7)x^4+(b_2+b_7)x^3+b_1x^2+(b_1+b_7)x + b_7)\]  \[ + (b_7x^7+b_6x^6+b_5x^5+b_4x^4+b_3x^3+b_2x^2+b_1x+b_0)\]
+				\[= (b_6+b_7)x^7+(b_5+b_6)x^6+(b_4+b_5)x^5+(b_3+b_7+b_4)x^4+(b_2+b_7+b_3)x^3\]
+				\[+(b_1+b_2)x^2+(b_1+b_1+b_7)x+(b_0+b_7)\]
+				\[= (b_6+b_7)x^7+(b_5+b_6)x^6+(b_4+b_5)x^5+(b_3+b_7+b_4)x^4+(b_2+b_7+b_3)x^3\]
+				\[+(b_1+b_2)x^2+(b_1+b_7)x+(b_0+b_7)\]
 		\end{enumerate}
 		
 		\item %c
 		
 		\begin{enumerate}
 			\item %i
-			
+			\[((03)y^3+(01)y^2+(01)y+(02))(s_3y^3+s_2y^2+s_1y+s_0) \mod{y^4 + 1}\]
+			\[(03)(s_3)y^6+(03)(s_2)y^5+(03)(s_1)y^4+(03)(s_0)y^3+s_3y^5+s_2y^4+s_1y^3+s_0y^2+s_3y^4+ s_2y^3+s_1y^2+s_0y\]
+			\[+(02)(s_3)y^3+(02)(s_2)y^2+(02)(s_1)y+(02)(s_0)\]
+			\[= (03)(s_3)y^6+((03)(s_2) + s_3)y^5 + ((03)(s_1)+s_2+s_3)y^4+((03)(s_0)+s_1+s_2+(02)(s_3))y^3\] 
+			\[+ (s_0+s_1+(02)(s_3))y^2 + (s_0+(02)(s_1))y + (02)(s_0)\]
+			\[= (03)(s_3)y^2+((03)(s_2) + s_3)y^1 + ((03)(s_1)+s_2+s_3)+((03)(s_0)+s_1+s_2+(02)(s_3))y^3\] 
+			\[+ (s_0+s_1+(02)(s_3))y^2 + (s_0+(02)(s_1))y + (02)(s_0)\]
+			\[=((03)(s_0)+s_1+s_2+(02)(s_3))y^3++ (s_0+s_1+(02)(s_3)+03)y^2\]
+			\[ + (s_0+(02)(s_1)+(03)(s_0)+s_1+s_2+(02)(s_3))y + ((02)(s_0)+(03)(s_1)+s_2+s_3\]
 			\item %ii
 		\end{enumerate}
 	\end{enumerate}
 	
-	
+	\newpage
 	\item[] \textbf{Problem 3} --- Error propagation in block cipher modes, 12 marks
 	
 	\begin{enumerate}
@@ -128,22 +152,24 @@ ASSIGNMENT 2}
 		
 		\begin{enumerate}
 			\item %i
-			
+			Only the $M_i$ block will be affected. ECB decrypts each block individually.
 			\item %ii
-			
+			Only the $M_i,M_{i+1}$ blocks will be affected. CBC decrypts each block by the cipher text XOR with previous output.
 			\item %iii
-			
+			Only the $M_i$ block will be affected. OFB decrypts the initialization vector first then XOR the cipher block.
 			\item %iv
-			
+			Only the $M_i,M_{i+1}$ blocks will be affected. CFB XOR the cipher block with IV then use the cipher block as the IV for next decryption. 
 			\item %v
+			Only the $M_i$ block will be affected. CTR decrypts each cipher individual with incrementing IV.
 		
 		\end{enumerate}
 		
 		\item %b
+			All of the blocks after $M_i$ will be affected. Since in CBC, they feed in the cipher text block to encrypt next cipher text block. All of the encryption after $M_i$ will be affected.
 	
 	\end{enumerate}
 	
-	
+	\newpage
 	\item[] \textbf{Problem 4} --- Flawed MAC designs, 24 marks
 	
 	\begin{enumerate}
@@ -152,8 +178,10 @@ ASSIGNMENT 2}
 		
 		\begin{enumerate}
 			\item %i
-			
+				Attacker can computer PHMAC$_K(M_2)$ without the knowledge of $K$. Since $M_2$ is $M_1||X$, it is same as having an input of $M = P_1||P_2||...||P_L||X_1||X_2||...||X_L$. And Since we already know PHMAC$_K$, in 2nd step of algorithm, we treat H as PHMAC$_K$ and $P_i$ as $X_i$ then run the algorithm.
 			\item %ii
+			(Idea from: https://crypto.stackexchange.com/questions/11670/why-is-appending-the-key-to-a-mesage-and-then-hashing-that-insecure-if-the-hash)\newline
+			If you are appending key at last, that means It is same thing as computing $ITHASH(M)$ then at line 2 of the algorithm, use it as $H$ and use $K$ as $P_i$. Since ITHASH is not weakly collision resistance. We can find collision $M'$ on $M$ such that $ITHASH(M) = ITHASH(M')$. Then we can find $ITHASH(M'||K)$ with a cost of $\frac{n}{2}$.
 		\end{enumerate}
 		
 		\item %b
@@ -161,33 +189,17 @@ ASSIGNMENT 2}
 		\begin{enumerate}
 		
 			\item %i
-			
+				It is easy to find CBC-MAC$_K$ of $M_3$ without knowledge of $K$. CBC-MAC$_K (M_2)$ is same as $E_K$(CBC-MAC$_K (M_1)$) since for the first loop of algorithm, $C = 0^n$. We can rewrite CBC-MAC$_K (M_3)$ as $E_K($CBC-MAC$(M_1))$ since for the first loop of the algorithm $C = 0^n$ then on second run, $P_i = 0^n$. Therefore, CBC-MAC$_K(M_3) = $  CBC-MAC$_K(M_2)$.
 			\item %ii
-		
+				It is possible to find CBC-MAC$_K(M_4)$ without knowledge of $K$ if we have pairs of messages and hash values. We can expend CBC-MAC$_K(M_4)$ as 
+				\[E_K(M_2) \oplus E_K(M_1) \oplus E_K(M_2) \oplus X \]
+				With the property of XOR, we can cancel out $E_K(M_2)$ so CBC-MAC$_K(M_4)$ can be expended as
+				\[E_K(M_1) \oplus X\]
+				Which is same as CBC-MAC$_K(M_3)$. Since we know ($M_3$,CBC-MAC$_K(M_3)$), we can figure out CBC-MAC$_K(M_4)$
 		\end{enumerate}
 	\end{enumerate}
 	
 	
-	\item[] \textbf{Problem 5} --- Cryptanalysis of a class of linear ciphers, 31 marks
-	
-	
-	\begin{enumerate}
-	\item %a
-	
-	\item %b
-	
-	\item %c
-	
-	\item %d
-	
-	\item %e
-	
-	\item %f
-	
-	\item %g
-	
-	\item %h
-	\end{enumerate}
 	
 	
 	\item[] \textbf{Problem 7} --- Playfair cipher cryptanalysis, 10 marks]
