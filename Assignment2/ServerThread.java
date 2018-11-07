@@ -55,7 +55,9 @@ public class ServerThread extends Thread
     {
 		BufferedReader in = null;
 		String incoming = null;
-			
+		DataInputStream inSer = null;
+		byte[] inmsg;
+
 		try {
 			in = new BufferedReader (new InputStreamReader (sock.getInputStream()));
 		}
@@ -68,9 +70,18 @@ public class ServerThread extends Thread
 			return;
 		}
 			
+		try{
+			inSer = new DataInputStream(sock.getInputStream());
+		}
+		catch (Exception e){
+			System.out.println(e);
+		}
+
 		/* Try to read from the socket */
 		try {
 			incoming = in.readLine ();
+			inmsg = inSer.readAllBytes();
+			
 		}
 		catch (IOException e) {
 			if (parent.getFlag())
@@ -82,7 +93,7 @@ public class ServerThread extends Thread
 		}
 			
 		/* See if we've recieved something */
-		while (incoming != null)
+		while (inmsg != null)
 			{
 			/* If the client has sent "exit", instruct the server to
 			* remove this thread from the vector of active connections.
@@ -110,7 +121,7 @@ public class ServerThread extends Thread
 				
 			/* Otherwise, just echo what was recieved. */
 				String[] splited = incoming.split("\\s+");
-				System.out.println ("Client " + idnum + ": " + incoming);
+				System.out.println ("Client " + idnum + ": " + inmsg);
 				
 			/* Try to get the next line.  If an IOException occurs it is
 			* probably because another client told the server to shutdown,
@@ -119,6 +130,7 @@ public class ServerThread extends Thread
 			*/
 				try {
 					incoming = in.readLine ();
+					inmsg = inSer.readAllBytes();
 					
 				}
 				catch (IOException e) {
