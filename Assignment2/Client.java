@@ -1,5 +1,9 @@
 import java.io.*;
 import java.net.*;
+import javax.crypto.spec.*;
+//import com.sun.corba.se.impl.ior.ByteBuffer;
+import java.nio.ByteBuffer;
+
 
 /**
  * Client program.  Connects to the server and sends text accross.
@@ -8,20 +12,30 @@ import java.net.*;
 public class Client 
 {
     private Socket sock;  //Socket to communicate with.
-	private Secure secure;
+	static FileInputStream in_file = null;
+	static byte[] out_file = null;
+	static byte[] seed = null;
     /**
      * Main method, starts the client.
      * @param args args[0] needs to be a hostname, args[1] a port number.
      */
     public static void main (String [] args)
     {
-		if (args.length != 2) {
-			System.out.println ("Usage: java Client hostname port#");
+		if (args.length < 5) {
+			System.out.println ("Usage: java Client hostname port# sourceFile destFile seed");
 			System.out.println ("hostname is a string identifying your server");
 			System.out.println ("port is a positive integer identifying the port to connect to the server");
 			return;
 		}
-
+		try{
+			in_file = new FileInputStream(args[2]);
+			out_file = args[3].getBytes();
+			seed = args[4].getBytes();
+		}
+		catch (Exception e){
+			System.out.print(e);
+			return;
+		}
 		try {
 			Client c = new Client (args[0], Integer.parseInt(args[1]));
 		}
@@ -41,8 +55,10 @@ public class Client
     {
 		/* Allows us to get input from the keyboard. */
 		BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+		
 		String userinput;
 		PrintWriter out;
+		
 			
 		/* Try to connect to the specified host on the specified port. */
 		try {
@@ -68,12 +84,48 @@ public class Client
 			System.out.println ("Could not create output stream.");
 			return;
 		}
+
+		try {
+			
+		}catch (Exception e){
+			System.out.println(e);
+			return;
+		}
+		
 			
 		/* Wait for the user to type stuff. */
 		try {
+			ByteBuffer bb = ByteBuffer.allocate(4);
+			byte[] filemsg = new byte[in_file.available()];
+			int read_bytes = in_file.read(filemsg);
+			bb.putInt(read_bytes);
+			byte[] lengthbyte = bb.array();
+			// compute key:  1st 16 bytes of SHA-1 hash of seed
+			SecretKeySpec key = CryptoUtilities.key_from_seed(seed);
+
+			// append HMAC-SHA-1 message digest
+			
+			byte[] hashed_file_msg = CryptoUtilities.append_hash(filemsg,key);
+
+			// do AES encryption
+			byte[] aes_ciphertext_file = CryptoUtilities.encrypt(hashed_file_msg,key);
+
+			byte[] hashed_len = CryptoUtilities.append_hash(lengthbyte, key);
+
+			byte[] ciph_len = CryptoUtilities.encrypt(hashed_len, key);
+
+			byte[] hashed_name = CryptoUtilities.append_hash(out_file, key);
+
+			byte[] ciph_name = CryptoUtilities.encrypt(hashed_name, key);
+
+			out.print(ciph_name);
+			out.print(aes_ciphertext_file);
+			out.print(ciph_len);
+
+			
 			while ((userinput = stdIn.readLine()) != null) {
 				/* Echo it to the screen. */
-				out.println(userinput);
+				//out.println(userinput);
 						
 				/* Tricky bit.  Since Java does short circuiting of logical 
 				* expressions, we need to checkerror to be first so it is always 
@@ -97,6 +149,9 @@ public class Client
 			}
 		} catch (IOException e) {
 			System.out.println ("Could not read from input.");
+			return;
+		} catch (Exception e){
+			System.out.println(e);
 			return;
 		}		
     }

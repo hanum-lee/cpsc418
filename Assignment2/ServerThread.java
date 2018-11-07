@@ -109,6 +109,7 @@ public class ServerThread extends Thread
 					}	
 				
 			/* Otherwise, just echo what was recieved. */
+				String[] splited = incoming.split("\\s+");
 				System.out.println ("Client " + idnum + ": " + incoming);
 				
 			/* Try to get the next line.  If an IOException occurs it is
@@ -118,6 +119,7 @@ public class ServerThread extends Thread
 			*/
 				try {
 					incoming = in.readLine ();
+					
 				}
 				catch (IOException e) {
 					if (parent.getFlag())
