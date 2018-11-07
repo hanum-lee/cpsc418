@@ -44,10 +44,15 @@ ASSIGNMENT 2}
 		
 		\begin{enumerate}
 			\item %i
+			$\{1,x,x+1,x^{2},x^{2}+1,x^{2}+x,x^{2}+x+1,x^{3},x^{3}+1,x^{3}+x,x^{3}+x+1,x^{3}+x^{2},x^{3}+x^{2}+1,x^{3}+x^{2}+x,x^{3}+x^{2}+x+1 \}$
 			
 			\item %ii
+			For polynomials with 0$\leq$degree$\leq$3 When we substitute 1 to x and solve, if the result is 0, then the polynomial is reducible. So compute $f(1)$ for all the polynomials above and the ones resulting 0 is reducible. Which are: \newline
+			$\{x+1,x^{2}+1,x^{2}+x,x^{3}+1,x^{3}+x,x^{3}+x^{2},x^{3}+x^{2}+x+1\}$
 			
 			\item %iii
+			All the other polynomials that weren't listed at ii are irreducible. Which are: \newline
+			$\{1,x,x^{2},x^{2}+x+1,x^{3},x^{3}+x+1,x^{3}+x^{2}+x\}$
 		
 		\end{enumerate}
 	
@@ -55,8 +60,20 @@ ASSIGNMENT 2}
 			
 		\begin{enumerate}
 			\item %i
+			$p(x) = x^{4}+x+1$ which means $x^{4}+x+1 = 0$ so $x^4=x+1$\newline
+			$f(x) = x^{2}+1$,  $g(x) = x^{3}+x^{2}+1$	\newline
+			\[f(x)g(x) = (x^2+1)(x^{3}+x^{2}+1)\]
+			\[= x^5 + x^4 + x + x^3 + x^2 + 1\]
+			\[= x(x+1) + x+1 + x^3 + x^2 + x + 1\]
+			\[= x^2 + x + x + 1 + x^3 + x^2 + x + 1\]
+			\[=x^3+x \pmod{x^4+x+1} \]
 			
 			\item %ii
+			$p(x) = x^{4}+x+1$ which means $x^{4}+x+1 = 0$ so $x^4+x=1$\newline
+			$f(x) = x$ and we have to find a polynomial $g(x)$ that is:
+			\[f(x)g(x) = 1 = x^4 + x\] So,
+			\[xg(x) = x^4 + x\]
+			\[g(x) = x^3 + 1\]
 		
 		\end{enumerate}
 	
@@ -64,11 +81,17 @@ ASSIGNMENT 2}
 		
 		\begin{enumerate}
 		
-		\item %i
-		
-		\item %ii
-		
-		\item %iii
+			\item %i
+			$M(y) = y^4 + 1$ which means $y^4 =1 $
+			Suppose there is a arbitrary equation $g(y)$ which $g(y) = ay^3+by^2+cy+d$ where $a,b,c,d \in \mathcal{Z} $ 
+			\[g(y) \bullet y  = (ay^3+by^2+cy+d)(y)\]
+			\[=ay^4+by^3+cy^2+dy\]
+			\[=by^3 + cy^2 +dy + a\]
+			for any arbitrary equation. Which shows that the coefficients are circular left shift of the vector by one.
+				
+			\item %ii
+				
+			\item %iii
 		\end{enumerate}
 	\end{enumerate}
 	
