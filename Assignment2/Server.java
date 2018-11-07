@@ -14,6 +14,7 @@ public class Server
     private Vector <ServerThread> serverthreads;  //holds the active threads
     private boolean shutdown;  //allows clients to shutdown the server
 	private int clientcounter;  //id numbers for the clients
+	private static byte[] seedbyte;
 
     /**
      * Main method
@@ -21,11 +22,16 @@ public class Server
      */
     public static void main (String [] args)
     {
-		if (args.length != 1) {
+		if (args.length < 2) {
 			System.out.println ("Usage: java Server port#");
 			return;
 		}
 
+		try {
+			seedbyte = args[1].getBytes();
+		} catch (Exception e){
+			System.out.println(e);
+		}
 		try {
 			Server s = new Server (Integer.parseInt(args[0]));
 		}
@@ -137,7 +143,7 @@ public class Server
 				/* Create a new thread to deal with the client, add it to the vector of open connections.
 				* Finally, start the thread's execution. Start method makes the threads go by calling their
 				* run() methods. */
-				st = new ServerThread (client, this, clientcounter++);
+				st = new ServerThread (client, this, clientcounter++,seedbyte);
 				serverthreads.add (st);
 				st.start ();
 			}

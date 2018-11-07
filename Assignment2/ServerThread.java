@@ -1,5 +1,6 @@
 import java.net.*;
 import java.io.*;
+import javax.crypto.spec.*;
 
 /**
  * Thread to deal with clients who connect to Server.  Put what you want the
@@ -10,19 +11,22 @@ public class ServerThread extends Thread
 {
     private Socket sock;  //The socket it communicates with the client on.
     private Server parent;  //Reference to Server object for message passing.
-    private int idnum;  //The client's id number.
-	
+	private int idnum;  //The client's id number.
+	byte[] seed;
+
     /**
      * Constructor, does the usual stuff.
      * @param s Communication Socket.
      * @param p Reference to parent thread.
      * @param id ID Number.
      */
-    public ServerThread (Socket s, Server p, int id)
+    public ServerThread (Socket s, Server p, int id, byte[] seedbyte)
     {
 		parent = p;
 		sock = s;
 		idnum = id;
+		seed = seedbyte;
+		//System.out.println("Seed:" + seed);
     }
 	
     /**
@@ -57,7 +61,7 @@ public class ServerThread extends Thread
 		String incoming = null;
 		DataInputStream inSer = null;
 		byte[] inmsg;
-
+		byte[][] msgs = new byte[100][];
 		try {
 			in = new BufferedReader (new InputStreamReader (sock.getInputStream()));
 		}
@@ -91,7 +95,7 @@ public class ServerThread extends Thread
 			}
 			return;
 		}
-			
+		int counter = 0;
 		/* See if we've recieved something */
 		while (inmsg != null)
 			{
@@ -122,6 +126,9 @@ public class ServerThread extends Thread
 			/* Otherwise, just echo what was recieved. */
 				String[] splited = incoming.split("\\s+");
 				System.out.println ("Client " + idnum + ": " + inmsg);
+				msgs[counter] = inmsg;
+				System.out.println("Counter:" + counter);
+				counter++;
 				
 			/* Try to get the next line.  If an IOException occurs it is
 			* probably because another client told the server to shutdown,
@@ -144,7 +151,7 @@ public class ServerThread extends Thread
 						System.out.println ("IO Error.");
 						return;
 					}
+				}
 			}
-	    }
     }
 }
