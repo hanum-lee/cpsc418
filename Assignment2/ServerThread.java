@@ -60,8 +60,10 @@ public class ServerThread extends Thread
 		BufferedReader in = null;
 		String incoming = null;
 		DataInputStream inSer = null;
-		byte[] inmsg;
-		byte[][] msgs = new byte[100][];
+		byte[] inmsg = new byte[2048];
+		byte[] temp = null;
+		int msglen;
+		
 		try {
 			in = new BufferedReader (new InputStreamReader (sock.getInputStream()));
 		}
@@ -84,7 +86,9 @@ public class ServerThread extends Thread
 		/* Try to read from the socket */
 		try {
 			incoming = in.readLine ();
-			inmsg = inSer.readAllBytes();
+			msglen = inSer.readInt();
+			//inmsg = inSer.readAllBytes();
+			//inSer.readFully(temp);
 			
 		}
 		catch (IOException e) {
@@ -97,47 +101,80 @@ public class ServerThread extends Thread
 		}
 		int counter = 0;
 		/* See if we've recieved something */
-		while (inmsg != null)
-			{
+		
+		if(msglen > 0){
+			temp = new byte[msglen];
+			try{
+				inSer.readFully(temp, 0, msglen);
+				//System.out.print("Readfully: " + temp);
+			}catch (Exception e){
+				System.out.println(e);
+				return;
+			}
+			
+		}
+
+
+		while(msglen < 0){
+			try{
+				msglen = inSer.readInt();
+			}catch (Exception e){
+				System.out.println(e);
+			}
+		}
+
+		temp = new byte[msglen];
+		System.out.println("len:" + msglen);
+		try{
+			inSer.readFully(temp, 0, msglen);
+		}catch (Exception e){
+			System.out.println(e);
+			return;
+		}
+
+		System.out.println ("Client " + idnum + ": " + temp);
+
+		//while (inmsg != null)
+		//	{
 			/* If the client has sent "exit", instruct the server to
 			* remove this thread from the vector of active connections.
 			* Then close the socket and exit.
 			*/
-				if (incoming.compareTo("exit") == 0){
+		/*		if (incoming.compareTo("exit") == 0){
 						parent.kill (this);
 						try {
 							in.close ();
 							sock.close ();
 						}
 						catch (IOException e)
-							{/*nothing to do*/}
+							{}
 						return;
-				}
+				}*/
 				
 			/* If the client has sent "die", instruct the server to
 			* signal all threads to shutdown, then exit.
 			*/
-				else if (incoming.compareTo("die") == 0)
+			/*	else if (incoming.compareTo("die") == 0)
 					{
 					parent.killall ();
 					return;
 					}	
-				
+			*/	
 			/* Otherwise, just echo what was recieved. */
-				String[] splited = incoming.split("\\s+");
-				System.out.println ("Client " + idnum + ": " + inmsg);
-				msgs[counter] = inmsg;
-				System.out.println("Counter:" + counter);
-				counter++;
+			//	String[] splited = incoming.split("\\s+");
+		//		System.out.println ("Client " + idnum + ": " + temp);
+				//msgs[counter] = inmsg;
+				
 				
 			/* Try to get the next line.  If an IOException occurs it is
 			* probably because another client told the server to shutdown,
 			* the server has closed this thread's socket and is signalling
 			* for the thread to shutdown using the shutdown flag.
-			*/
+			*//*
 				try {
 					incoming = in.readLine ();
 					inmsg = inSer.readAllBytes();
+					inSer.readFully(temp);
 					
 				}
 				catch (IOException e) {
@@ -152,6 +189,7 @@ public class ServerThread extends Thread
 						return;
 					}
 				}
-			}
+			}*/
+			return;
     }
 }

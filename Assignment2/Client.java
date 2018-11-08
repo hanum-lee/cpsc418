@@ -87,8 +87,7 @@ public class Client
 		}
 
 		try {
-			fromcli = sock.getOutputStream();
-			fromcliout = new DataOutputStream(fromcli);
+			fromcliout = new DataOutputStream(sock.getOutputStream());
 		}catch (Exception e){
 			System.out.println(e);
 			return;
@@ -120,9 +119,10 @@ public class Client
 
 			byte[] ciph_name = CryptoUtilities.encrypt(hashed_name, key);
 
+			fromcliout.writeInt(ciph_name.length);
 			fromcliout.write(ciph_name);
-			fromcliout.write(aes_ciphertext_file);
-			fromcliout.write(ciph_len);
+			//fromcliout.write(aes_ciphertext_file);
+			//fromcliout.write(ciph_len);
 
 			//out.print(ciph_name);
 			//out.print(aes_ciphertext_file);
