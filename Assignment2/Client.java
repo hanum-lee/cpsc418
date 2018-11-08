@@ -119,8 +119,12 @@ public class Client
 
 			byte[] ciph_name = CryptoUtilities.encrypt(hashed_name, key);
 
+			System.out.println(ciph_name.length);
 			fromcliout.writeInt(ciph_name.length);
 			fromcliout.write(ciph_name);
+			
+			fromcliout.writeInt(aes_ciphertext_file.length);
+			fromcliout.write(aes_ciphertext_file);
 			//fromcliout.write(aes_ciphertext_file);
 			//fromcliout.write(ciph_len);
 

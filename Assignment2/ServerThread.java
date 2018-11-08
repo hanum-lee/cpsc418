@@ -12,7 +12,7 @@ public class ServerThread extends Thread
     private Socket sock;  //The socket it communicates with the client on.
     private Server parent;  //Reference to Server object for message passing.
 	private int idnum;  //The client's id number.
-	byte[] seed;
+	private SecretKeySpec key;
 
     /**
      * Constructor, does the usual stuff.
@@ -25,7 +25,7 @@ public class ServerThread extends Thread
 		parent = p;
 		sock = s;
 		idnum = id;
-		seed = seedbyte;
+		key = CryptoUtilities.key_from_seed(seedbyte);
 		//System.out.println("Seed:" + seed);
     }
 	
@@ -63,7 +63,7 @@ public class ServerThread extends Thread
 		byte[] inmsg = new byte[2048];
 		byte[] temp = null;
 		int msglen;
-		
+		/*
 		try {
 			in = new BufferedReader (new InputStreamReader (sock.getInputStream()));
 		}
@@ -75,17 +75,17 @@ public class ServerThread extends Thread
 			System.out.println ("Could not establish communication.");
 			return;
 		}
-			
+			*/
 		try{
 			inSer = new DataInputStream(sock.getInputStream());
 		}
 		catch (Exception e){
 			System.out.println(e);
 		}
-
+		
 		/* Try to read from the socket */
 		try {
-			incoming = in.readLine ();
+			//incoming = in.readLine ();
 			msglen = inSer.readInt();
 			//inmsg = inSer.readAllBytes();
 			//inSer.readFully(temp);
@@ -99,7 +99,8 @@ public class ServerThread extends Thread
 			}
 			return;
 		}
-		int counter = 0;
+		System.out.println("Working?");
+		//int counter = 0;
 		/* See if we've recieved something */
 		
 		if(msglen > 0){
@@ -108,32 +109,64 @@ public class ServerThread extends Thread
 				inSer.readFully(temp, 0, msglen);
 				//System.out.print("Readfully: " + temp);
 			}catch (Exception e){
-				System.out.println(e);
+				System.out.println("Reading:" + e);
 				return;
 			}
 			
 		}
 
 
-		while(msglen < 0){
-			try{
-				msglen = inSer.readInt();
-			}catch (Exception e){
-				System.out.println(e);
-			}
-		}
-
-		temp = new byte[msglen];
-		System.out.println("len:" + msglen);
+		byte[] hashed_name = CryptoUtilities.decrypt(temp,key);
+		byte[] decrmess = CryptoUtilities.extract_message(hashed_name);
+		String mess = null;
 		try{
-			inSer.readFully(temp, 0, msglen);
-		}catch (Exception e){
-			System.out.println(e);
+			mess = new String(decrmess, "UTF-8");
+		} catch (Exception e){
+			System.out.println("Showing: "+e);
 			return;
 		}
 
-		System.out.println ("Client " + idnum + ": " + temp);
+		System.out.println ("Client " + idnum + ": " + mess + "Length: " + temp.length);
 
+		
+		try {
+			msglen = inSer.readInt();
+		}
+		catch (IOException e) {
+			if (parent.getFlag())
+			{
+				System.out.println ("shutting down.");
+				return;
+			}
+			return;
+		}
+		/* See if we've recieved something */
+		
+		if(msglen > 0){
+			temp = new byte[msglen];
+			try{
+				inSer.readFully(temp, 0, msglen);
+				//System.out.print("Readfully: " + temp);
+			}catch (Exception e){
+				System.out.println("Reading:" + e);
+				return;
+			}
+			
+		}
+
+		byte[] hashed_file = CryptoUtilities.decrypt(temp,key);
+		byte[] decrfile = CryptoUtilities.extract_message(hashed_file);
+		mess = null;
+		try{
+			mess = new String(decrfile, "UTF-8");
+		} catch (Exception e){
+			System.out.println("Showing: "+e);
+			return;
+		}
+		System.out.println("File:" + mess);
+
+
+		//System.out.println("Message: " + mess);
 		//while (inmsg != null)
 		//	{
 			/* If the client has sent "exit", instruct the server to
@@ -190,6 +223,15 @@ public class ServerThread extends Thread
 					}
 				}
 			}*/
+			parent.killall();
+			/*try{
+				sock.close();
+				inSer.close();
+			}catch (Exception e){
+				System.out.println("Closing:" + e);
+				return;
+			}*/
+		
 			return;
     }
 }
