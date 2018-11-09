@@ -59,6 +59,7 @@ public class Client
 		DataOutputStream fromcliout;
 		String userinput;
 		PrintWriter out;
+		DataInputStream inCli;
 		
 			
 		/* Try to connect to the specified host on the specified port. */
@@ -88,6 +89,7 @@ public class Client
 
 		try {
 			fromcliout = new DataOutputStream(sock.getOutputStream());
+			inCli = new DataInputStream(sock.getInputStream());
 		}catch (Exception e){
 			System.out.println(e);
 			return;
@@ -134,9 +136,21 @@ public class Client
 			//out.print(ciph_name);
 			//out.print(aes_ciphertext_file);
 			//out.print(ciph_len);
+			int response = inCli.readInt();
 
+			if(response == 1){
+				System.out.println("Successfully transfered file.");
+			}else{
+				System.out.println("Failed to transfered file");
+			}
+
+			System.out.println ("Client exiting.");
+			stdIn.close ();
+			out.close ();
+			sock.close();
+			return;
 			
-			while ((userinput = stdIn.readLine()) != null) {
+			//while ((userinput = stdIn.readLine()) != null) {
 				/* Echo it to the screen. */
 				//out.println(userinput);
 						
@@ -152,14 +166,10 @@ public class Client
 				* if the user has exitted or asked the server to shutdown.  In 
 				* any of these cases we close our streams and exit.
 				*/
-				if ((out.checkError()) || (userinput.compareTo("exit") == 0) || (userinput.compareTo("die") == 0)) {
-					System.out.println ("Client exiting.");
-					stdIn.close ();
-					out.close ();
-					sock.close();
-					return;
-				}
-			}
+			/*	if ((out.checkError()) || (userinput.compareTo("exit") == 0) || (userinput.compareTo("die") == 0)) {
+
+				}*/
+			//}
 		} catch (IOException e) {
 			System.out.println ("Could not read from input.");
 			return;

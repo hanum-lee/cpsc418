@@ -64,21 +64,12 @@ public class ServerThread extends Thread
 		byte[] inmsg = new byte[2048];
 		byte[] temp = null;
 		int msglen;
-		/*
-		try {
-			in = new BufferedReader (new InputStreamReader (sock.getInputStream()));
-		}
-		catch (UnknownHostException e) {
-			System.out.println ("Unknown host error.");
-			return;
-		}
-		catch (IOException e) {
-			System.out.println ("Could not establish communication.");
-			return;
-		}
-			*/
+		DataOutputStream fromSer = null;
+		FileOutputStream out_file = null;
+
 		try{
 			inSer = new DataInputStream(sock.getInputStream());
+			fromSer = new DataOutputStream(sock.getOutputStream());
 		}
 		catch (Exception e){
 			System.out.println(e);
@@ -86,10 +77,7 @@ public class ServerThread extends Thread
 		
 		/* Try to read from the socket */
 		try {
-			//incoming = in.readLine ();
 			msglen = inSer.readInt();
-			//inmsg = inSer.readAllBytes();
-			//inSer.readFully(temp);
 			
 		}
 		catch (IOException e) {
@@ -101,101 +89,130 @@ public class ServerThread extends Thread
 			return;
 		}
 		System.out.println("Working?");
-		//int counter = 0;
 		/* See if we've recieved something */
-		
 		if(msglen > 0){
 			temp = new byte[msglen];
 			try{
 				inSer.readFully(temp, 0, msglen);
-				//System.out.print("Readfully: " + temp);
 			}catch (Exception e){
 				System.out.println("Reading:" + e);
 				return;
 			}
 			
 		}
-
 
 		byte[] hashed_name = CryptoUtilities.decrypt(temp,key);
-		byte[] decrmess = CryptoUtilities.extract_message(hashed_name);
-		String mess = null;
-		try{
-			mess = new String(decrmess, "UTF-8");
-		} catch (Exception e){
-			System.out.println("Showing: "+e);
-			return;
-		}
-
-		System.out.println ("Client " + idnum + ": " + mess + "Length: " + temp.length);
-
-		
-		try {
-			msglen = inSer.readInt();
-		}
-		catch (IOException e) {
-			if (parent.getFlag())
-			{
-				System.out.println ("shutting down.");
+		if (CryptoUtilities.verify_hash(hashed_name,key)){
+			byte[] decrName = CryptoUtilities.extract_message(hashed_name);
+			String fileName = null;
+			try{
+				fileName = new String(decrName, "UTF-8");
+			} catch (Exception e){
+				System.out.println("Showing: "+e);
 				return;
 			}
-			return;
-		}
-		/* See if we've recieved something */
-		
-		if(msglen > 0){
-			temp = new byte[msglen];
-			try{
-				inSer.readFully(temp, 0, msglen);
-				//System.out.print("Readfully: " + temp);
-			}catch (Exception e){
-				System.out.println("Reading:" + e);
+
+			System.out.println ("Client " + idnum + ": " + fileName + "Length: " + temp.length);
+
+			
+			try {
+				msglen = inSer.readInt();
+			}
+			catch (IOException e) {
+				if (parent.getFlag())
+				{
+					System.out.println ("shutting down.");
+					return;
+				}
 				return;
+			}
+			/* See if we've recieved something */
+			
+			if(msglen > 0){
+				temp = new byte[msglen];
+				try{
+					inSer.readFully(temp, 0, msglen);
+				}catch (Exception e){
+					System.out.println("Reading:" + e);
+					return;
+				}
+				
+			}
+
+			byte[] hashed_file = CryptoUtilities.decrypt(temp,key);
+			if (CryptoUtilities.verify_hash(hashed_file,key)){
+				byte[] decrfile = CryptoUtilities.extract_message(hashed_file);
+				String mess = null;
+				try{
+					mess = new String(decrfile, "UTF-8");
+				} catch (Exception e){
+					System.out.println("Showing: "+e);
+					return;
+				}
+				System.out.println("File:" + mess);
+
+				
+				try {
+					msglen = inSer.readInt();
+				}
+				catch (IOException e) {
+					if (parent.getFlag())
+					{
+						System.out.println ("shutting down.");
+						return;
+					}
+					return;
+				}
+				/* See if we've recieved something */
+				
+				if(msglen > 0){
+					temp = new byte[msglen];
+					try{
+						inSer.readFully(temp, 0, msglen);
+					}catch (Exception e){
+						System.out.println("Reading:" + e);
+						return;
+					}
+					
+				}
+				byte[] hashed_len = CryptoUtilities.decrypt(temp,key);
+				if (CryptoUtilities.verify_hash(hashed_len,key)){
+					byte[] decrlen = CryptoUtilities.extract_message(hashed_len);
+					int delen = ByteBuffer.wrap(decrlen).getInt();
+					System.out.println("lenght:" + delen);
+					try{
+						fromSer.writeInt(1);
+					}catch (Exception e){
+						System.out.println(e);
+						return;
+					}
+
+					
+					
+					try{
+						out_file = new FileOutputStream(fileName);
+						//int length = out_file.read();
+						//System.out.println("File Length: " + length);
+						out_file.write(decrfile);
+						out_file.close();
+
+					}catch (Exception e){
+
+					}
+				}else {
+
+				}
+
+				
+			}else{
+
 			}
 			
-		}
+		}else{
 
-		byte[] hashed_file = CryptoUtilities.decrypt(temp,key);
-		byte[] decrfile = CryptoUtilities.extract_message(hashed_file);
-		mess = null;
-		try{
-			mess = new String(decrfile, "UTF-8");
-		} catch (Exception e){
-			System.out.println("Showing: "+e);
-			return;
 		}
-		System.out.println("File:" + mess);
+		
 
-		
-		try {
-			msglen = inSer.readInt();
-		}
-		catch (IOException e) {
-			if (parent.getFlag())
-			{
-				System.out.println ("shutting down.");
-				return;
-			}
-			return;
-		}
-		/* See if we've recieved something */
-		
-		if(msglen > 0){
-			temp = new byte[msglen];
-			try{
-				inSer.readFully(temp, 0, msglen);
-				//System.out.print("Readfully: " + temp);
-			}catch (Exception e){
-				System.out.println("Reading:" + e);
-				return;
-			}
-			
-		}
-		byte[] hashed_len = CryptoUtilities.decrypt(temp,key);
-		byte[] decrlen = CryptoUtilities.extract_message(hashed_len);
-		int delen = ByteBuffer.wrap(decrlen).getInt();
-		System.out.println("lenght:" + delen);
-		
 
 		//System.out.println("Message: " + mess);
 		//while (inmsg != null)
@@ -255,13 +272,14 @@ public class ServerThread extends Thread
 				}
 			}*/
 			parent.killall();
-			/*try{
+			
+			try{
 				sock.close();
 				inSer.close();
 			}catch (Exception e){
 				System.out.println("Closing:" + e);
 				return;
-			}*/
+			}
 		
 			return;
     }
