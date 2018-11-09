@@ -1,6 +1,7 @@
 import java.net.*;
 import java.io.*;
 import javax.crypto.spec.*;
+import java.nio.ByteBuffer;
 
 /**
  * Thread to deal with clients who connect to Server.  Put what you want the
@@ -165,7 +166,35 @@ public class ServerThread extends Thread
 		}
 		System.out.println("File:" + mess);
 
-
+		
+		try {
+			msglen = inSer.readInt();
+		}
+		catch (IOException e) {
+			if (parent.getFlag())
+			{
+				System.out.println ("shutting down.");
+				return;
+			}
+			return;
+		}
+		/* See if we've recieved something */
+		
+		if(msglen > 0){
+			temp = new byte[msglen];
+			try{
+				inSer.readFully(temp, 0, msglen);
+				//System.out.print("Readfully: " + temp);
+			}catch (Exception e){
+				System.out.println("Reading:" + e);
+				return;
+			}
+			
+		}
+		byte[] hashed_len = CryptoUtilities.decrypt(temp,key);
+		byte[] decrlen = CryptoUtilities.extract_message(hashed_len);
+		int delen = ByteBuffer.wrap(decrlen).getInt();
+		System.out.println("lenght:" + delen);
 		
 
 		//System.out.println("Message: " + mess);
