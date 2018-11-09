@@ -166,6 +166,8 @@ public class ServerThread extends Thread
 		System.out.println("File:" + mess);
 
 
+		
+
 		//System.out.println("Message: " + mess);
 		//while (inmsg != null)
 		//	{
