@@ -55,7 +55,6 @@ public class Client
     {
 		/* Allows us to get input from the keyboard. */
 		BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
-		OutputStream fromcli;
 		DataOutputStream fromcliout;
 		String userinput;
 		PrintWriter out;
@@ -130,12 +129,7 @@ public class Client
 
 			fromcliout.writeInt(ciph_len.length);
 			fromcliout.write(ciph_len);
-			//fromcliout.write(aes_ciphertext_file);
-			//fromcliout.write(ciph_len);
 
-			//out.print(ciph_name);
-			//out.print(aes_ciphertext_file);
-			//out.print(ciph_len);
 			int response = inCli.readInt();
 
 			if(response == 1){

@@ -181,9 +181,6 @@ public class ServerThread extends Thread
 					byte[] decrlen = CryptoUtilities.extract_message(hashed_len);
 					int delen = ByteBuffer.wrap(decrlen).getInt();
 					System.out.println("lenght:" + delen);
-
-
-					
 					
 					try{
 						out_file = new FileOutputStream(fileName);
@@ -191,6 +188,7 @@ public class ServerThread extends Thread
 						//System.out.println("File Length: " + length);
 						out_file.write(decrfile);
 						out_file.close();
+						
 
 					}catch (Exception e){
 						status = 0;
