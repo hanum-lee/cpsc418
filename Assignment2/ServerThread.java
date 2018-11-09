@@ -66,6 +66,7 @@ public class ServerThread extends Thread
 		int msglen;
 		DataOutputStream fromSer = null;
 		FileOutputStream out_file = null;
+		int status = 1;
 
 		try{
 			inSer = new DataInputStream(sock.getInputStream());
@@ -180,12 +181,7 @@ public class ServerThread extends Thread
 					byte[] decrlen = CryptoUtilities.extract_message(hashed_len);
 					int delen = ByteBuffer.wrap(decrlen).getInt();
 					System.out.println("lenght:" + delen);
-					try{
-						fromSer.writeInt(1);
-					}catch (Exception e){
-						System.out.println(e);
-						return;
-					}
+
 
 					
 					
@@ -197,21 +193,27 @@ public class ServerThread extends Thread
 						out_file.close();
 
 					}catch (Exception e){
-
+						status = 0;
 					}
 				}else {
-
+					status = 0;
 				}
 
 				
 			}else{
-
+				status = 0;
 			}
 			
 		}else{
-
+			status = 0;
 		}
-		
+
+		try{
+			fromSer.writeInt(status);
+		}catch (Exception e){
+			System.out.println(e);
+			return;
+		}
 
 
 		//System.out.println("Message: " + mess);
