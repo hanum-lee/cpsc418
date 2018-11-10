@@ -15,6 +15,7 @@ public class Server
     private boolean shutdown;  //allows clients to shutdown the server
 	private int clientcounter;  //id numbers for the clients
 	private static byte[] seedbyte;
+	private static boolean debug;
 
     /**
      * Main method
@@ -26,25 +27,50 @@ public class Server
 			System.out.println ("Usage: java Server port#");
 			return;
 		}
+		if(args[0].compareTo("debug") == 0){
+			debug = true;
+			try {
+				seedbyte = args[2].getBytes();
+				try {
+					Server s = new Server (Integer.parseInt(args[1]));
+				}
+				catch (ArrayIndexOutOfBoundsException e) {
+					System.out.println ("Usage: java Server port#");
+					System.out.println ("Second argument is not a port number.");
+					return;
+				}
+				catch (NumberFormatException e) {
+					System.out.println ("Usage: java Server port#");
+					System.out.println ("Second argument is not a port number.");
+					return;
+				}
+			} catch (Exception e){
+				System.out.println(e);
+			}
+		}else{
+			debug = false;
+			try {
+				seedbyte = args[1].getBytes();
+				try {
+					Server s = new Server (Integer.parseInt(args[0]));
+				}
+				catch (ArrayIndexOutOfBoundsException e) {
+					System.out.println ("Usage: java Server port#");
+					System.out.println ("Second argument is not a port number.");
+					return;
+				}
+				catch (NumberFormatException e) {
+					System.out.println ("Usage: java Server port#");
+					System.out.println ("Second argument is not a port number.");
+					return;
+				}
 
-		try {
-			seedbyte = args[1].getBytes();
-		} catch (Exception e){
-			System.out.println(e);
+			} catch (Exception e){
+				System.out.println(e);
+			}
 		}
-		try {
-			Server s = new Server (Integer.parseInt(args[0]));
-		}
-		catch (ArrayIndexOutOfBoundsException e) {
-			System.out.println ("Usage: java Server port#");
-			System.out.println ("Second argument is not a port number.");
-			return;
-		}
-		catch (NumberFormatException e) {
-			System.out.println ("Usage: java Server port#");
-			System.out.println ("Second argument is not a port number.");
-			return;
-		}
+		
+		
     }
 	
     /**
@@ -143,7 +169,7 @@ public class Server
 				/* Create a new thread to deal with the client, add it to the vector of open connections.
 				* Finally, start the thread's execution. Start method makes the threads go by calling their
 				* run() methods. */
-				st = new ServerThread (client, this, clientcounter++,seedbyte);
+				st = new ServerThread (client, this, clientcounter++,seedbyte,debug);
 				serverthreads.add (st);
 				st.start ();
 			}

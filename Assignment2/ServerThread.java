@@ -14,6 +14,7 @@ public class ServerThread extends Thread
     private Server parent;  //Reference to Server object for message passing.
 	private int idnum;  //The client's id number.
 	private SecretKeySpec key;
+	private boolean debug;
 
     /**
      * Constructor, does the usual stuff.
@@ -21,12 +22,13 @@ public class ServerThread extends Thread
      * @param p Reference to parent thread.
      * @param id ID Number.
      */
-    public ServerThread (Socket s, Server p, int id, byte[] seedbyte)
+    public ServerThread (Socket s, Server p, int id, byte[] seedbyte, boolean destatus)
     {
 		parent = p;
 		sock = s;
 		idnum = id;
 		key = CryptoUtilities.key_from_seed(seedbyte);
+		debug = destatus;
 		//System.out.println("Seed:" + seed);
     }
 	
@@ -58,16 +60,13 @@ public class ServerThread extends Thread
      */
     public void run ()
     {
-		BufferedReader in = null;
-		String incoming = null;
 		DataInputStream inSer = null;
-		byte[] inmsg = new byte[2048];
 		byte[] temp = null;
 		int msglen;
 		DataOutputStream fromSer = null;
 		FileOutputStream out_file = null;
 		int status = 1;
-
+		FileInputStream in_file = null;
 		try{
 			inSer = new DataInputStream(sock.getInputStream());
 			fromSer = new DataOutputStream(sock.getOutputStream());
@@ -89,7 +88,6 @@ public class ServerThread extends Thread
 			}
 			return;
 		}
-		System.out.println("Working?");
 		/* See if we've recieved something */
 		if(msglen > 0){
 			temp = new byte[msglen];
@@ -113,8 +111,14 @@ public class ServerThread extends Thread
 				return;
 			}
 
-			System.out.println ("Client " + idnum + ": " + fileName + "Length: " + temp.length);
-
+			try{
+				if(debug){
+					System.out.println("Client " + idnum + ": " + "Destination ACK: " + status);
+				}
+				fromSer.writeInt(status);
+			}catch (Exception e){
+				
+			}
 			
 			try {
 				msglen = inSer.readInt();
@@ -150,8 +154,16 @@ public class ServerThread extends Thread
 					System.out.println("Showing: "+e);
 					return;
 				}
-				System.out.println("File:" + mess);
+				//System.out.println("File:" + mess);
 
+				try{
+					if(debug){
+						System.out.println("Client " + idnum + ": " + "File ACK: " + status);
+					}
+					fromSer.writeInt(status);
+				}catch (Exception e){
+					
+				}
 				
 				try {
 					msglen = inSer.readInt();
@@ -180,19 +192,24 @@ public class ServerThread extends Thread
 				if (CryptoUtilities.verify_hash(hashed_len,key)){
 					byte[] decrlen = CryptoUtilities.extract_message(hashed_len);
 					int delen = ByteBuffer.wrap(decrlen).getInt();
-					System.out.println("lenght:" + delen);
+					//System.out.println("lenght:" + delen);
 					
 					try{
 						out_file = new FileOutputStream(fileName);
-						//int length = out_file.read();
-						//System.out.println("File Length: " + length);
 						out_file.write(decrfile);
 						out_file.close();
-						
+						in_file = new FileInputStream(fileName);
+						byte[] msg = new byte[in_file.available()];
+						int read_bytes = in_file.read(msg);
+						if(read_bytes != delen){
+							status = 0;
+						}
 
 					}catch (Exception e){
 						status = 0;
 					}
+
+
 				}else {
 					status = 0;
 				}
@@ -205,77 +222,23 @@ public class ServerThread extends Thread
 		}else{
 			status = 0;
 		}
-
 		try{
+			if(debug){
+				System.out.println("Client " + idnum + ": " + "Final ACK: " + status);
+			}
 			fromSer.writeInt(status);
 		}catch (Exception e){
 			System.out.println(e);
 			return;
 		}
 
-
-		//System.out.println("Message: " + mess);
-		//while (inmsg != null)
-		//	{
-			/* If the client has sent "exit", instruct the server to
-			* remove this thread from the vector of active connections.
-			* Then close the socket and exit.
-			*/
-		/*		if (incoming.compareTo("exit") == 0){
-						parent.kill (this);
-						try {
-							in.close ();
-							sock.close ();
-						}
-						catch (IOException e)
-							{}
-						return;
-				}*/
-				
-			/* If the client has sent "die", instruct the server to
-			* signal all threads to shutdown, then exit.
-			*/
-			/*	else if (incoming.compareTo("die") == 0)
-					{
-					parent.killall ();
-					return;
-					}	
-			*/	
-			/* Otherwise, just echo what was recieved. */
-			//	String[] splited = incoming.split("\\s+");
-		//		System.out.println ("Client " + idnum + ": " + temp);
-				//msgs[counter] = inmsg;
-				
-				
-			/* Try to get the next line.  If an IOException occurs it is
-			* probably because another client told the server to shutdown,
-			* the server has closed this thread's socket and is signalling
-			* for the thread to shutdown using the shutdown flag.
-			*//*
-				try {
-					incoming = in.readLine ();
-					inmsg = inSer.readAllBytes();
-					inSer.readFully(temp);
-					
-				}
-				catch (IOException e) {
-					if (parent.getFlag())
-					{
-						System.out.println ("shutting down.");
-						return;
-					}
-					else
-					{
-						System.out.println ("IO Error.");
-						return;
-					}
-				}
-			}*/
 			parent.killall();
 			
 			try{
 				sock.close();
 				inSer.close();
+				fromSer.close();
+
 			}catch (Exception e){
 				System.out.println("Closing:" + e);
 				return;

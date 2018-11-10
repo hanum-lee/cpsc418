@@ -120,20 +120,31 @@ public class Client
 
 			byte[] ciph_name = CryptoUtilities.encrypt(hashed_name, key);
 
-			System.out.println(read_bytes);
+			//System.out.println(read_bytes);
 			fromcliout.writeInt(ciph_name.length);
 			fromcliout.write(ciph_name);
-			
-			fromcliout.writeInt(aes_ciphertext_file.length);
-			fromcliout.write(aes_ciphertext_file);
-
-			fromcliout.writeInt(ciph_len.length);
-			fromcliout.write(ciph_len);
-
 			int response = inCli.readInt();
-
 			if(response == 1){
-				System.out.println("Successfully transfered file.");
+				fromcliout.writeInt(aes_ciphertext_file.length);
+				fromcliout.write(aes_ciphertext_file);
+
+				response = inCli.readInt();
+				if (response == 1){
+					fromcliout.writeInt(ciph_len.length);
+					fromcliout.write(ciph_len);
+
+					response = inCli.readInt();
+
+					if(response == 1){
+						System.out.println("Successfully transfered file.");
+					}else{
+						System.out.println("Failed to transfered file");
+					}
+				} else{
+					System.out.println("Failed to transfered file");
+				}
+				
+				
 			}else{
 				System.out.println("Failed to transfered file");
 			}
@@ -144,26 +155,6 @@ public class Client
 			sock.close();
 			return;
 			
-			//while ((userinput = stdIn.readLine()) != null) {
-				/* Echo it to the screen. */
-				//out.println(userinput);
-						
-				/* Tricky bit.  Since Java does short circuiting of logical 
-				* expressions, we need to checkerror to be first so it is always 
-				* executes.  Check error flushes the outputstream, which we need
-				* to do every time after the user types something, otherwise, 
-				* Java will wait for the send buffer to fill up before actually 
-				* sending anything.  See PrintWriter.flush().  If checkerror
-				* has reported an error, that means the last packet was not 
-				* delivered and the server has disconnected, probably because 
-				* another client has told it to shutdown.  Then we check to see
-				* if the user has exitted or asked the server to shutdown.  In 
-				* any of these cases we close our streams and exit.
-				*/
-			/*	if ((out.checkError()) || (userinput.compareTo("exit") == 0) || (userinput.compareTo("die") == 0)) {
-
-				}*/
-			//}
 		} catch (IOException e) {
 			System.out.println ("Could not read from input.");
 			return;
