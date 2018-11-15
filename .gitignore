@@ -2,3 +2,5 @@
 */*.synctex*
 */*.log*
 */*.pdf
+*/*.tex
+*/*.aux
