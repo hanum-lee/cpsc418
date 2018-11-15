@@ -232,7 +232,7 @@ public class ServerThread extends Thread
 			return;
 		}
 
-			parent.killall();
+			parent.kill(this);
 			
 			try{
 				sock.close();
