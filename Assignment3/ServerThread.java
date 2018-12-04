@@ -125,6 +125,17 @@ public class ServerThread extends Thread
 	}
 
 	System.out.println("P value: " + pval);
+	BigInteger gval = new BigInteger("1");
+	while(gval.compareTo(pval.subtract(new BigInteger("2"))) == 0){
+		BigInteger temp = gval.modPow(qval,pval);
+		System.out.println("Temp: " + temp);
+		if(temp.compareTo(new BigInteger("1")) != 0){
+			break;
+		}
+
+		gval.add(new BigInteger("1"));
+	}
+	System.out.println("G val: " + gval);
 	// compute key:  1st 16 bytes of SHA-1 hash of seed
 	//key = CryptoUtilities.key_from_seed(seed.getBytes());
  	//debug("Using key = " + CryptoUtilities.toHexString(key.getEncoded()));
