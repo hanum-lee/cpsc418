@@ -108,7 +108,7 @@ public class ServerThread extends Thread
 	}
 	*/
 	Random rnd = new Random(3);
-	BigInteger qval = new BigInteger(511,rnd);
+	BigInteger qval = new BigInteger(511,3, rnd);
 	BigInteger pval = qval.multiply(new BigInteger("2"));
 	pval = pval.add(new BigInteger("1"));
 	Boolean isPrime = false;
@@ -125,17 +125,34 @@ public class ServerThread extends Thread
 	}
 
 	System.out.println("P value: " + pval);
-	BigInteger gval = new BigInteger("1");
-	while(gval.compareTo(pval.subtract(new BigInteger("2"))) == 0){
+	BigInteger gval = (new BigInteger("1"));
+	//System.out.println("compare: " + gval.compareTo(pval.subtract(new BigInteger("2"))));
+	while(gval.compareTo(pval.subtract(new BigInteger("2"))) != 0){
 		BigInteger temp = gval.modPow(qval,pval);
-		System.out.println("Temp: " + temp);
+		System.out.println("temp: " + temp + "gval: " + gval);
 		if(temp.compareTo(new BigInteger("1")) != 0){
 			break;
 		}
 
-		gval.add(new BigInteger("1"));
+		gval = gval.add(new BigInteger("1"));
 	}
 	System.out.println("G val: " + gval);
+	BigInteger pm2 = pval.subtract(new BigInteger("2"));
+	BigInteger bval = new BigInteger(511,3,rnd);
+	Boolean bv = false;
+
+	while(!bv){
+		if(bval.compareTo(pm2) == -1){
+			bv = true;
+		}
+		bval = new BigInteger(511,rnd);
+	}
+
+	System.out.println("b: " + bval);
+	BigInteger kSent = gval.modPow(bval,pval);
+	System.out.println("Ksent: " + kSent);
+
+
 	// compute key:  1st 16 bytes of SHA-1 hash of seed
 	//key = CryptoUtilities.key_from_seed(seed.getBytes());
  	//debug("Using key = " + CryptoUtilities.toHexString(key.getEncoded()));
